@@ -23,27 +23,28 @@ class P2pServer {
     }
 
     /**
-     * Connect a new user to the socket intialized by the listen() function
-     * @param {*} socket 
-     */
-     connectSocket(socket) {
-        this.sockets.push(socket);
-        console.log('Socket connected!');
-    }
-
-    /**
      * Connect the user to the peer started by the access of the first user
      */
     connectToPeers() {
         peers.forEach(peer => {
             const socket = new Websocket(peer);
-            socket.on('open', () => this.connectSocket(socket))
-            
-            this.messageHandler(socket);
-            
-            //sends the stringify version of the blockchain's chain to sockets
-            socket.send(JSON.stringify(this.blockchain.chain));
-        })
+
+            socket.on('open', () => this.connectSocket(socket));
+        });
+    }
+
+    /**
+     * Connect a new user to the socket intialized by the listen() function
+     * @param {*} socket 
+     */
+    connectSocket(socket) {
+        this.sockets.push(socket);
+        console.log('Socket connected!');
+
+        this.messageHandler(socket);
+                
+        //sends the stringify version of the blockchain's chain to sockets
+        socket.send(JSON.stringify(this.blockchain.chain));
     }
 
     /**
