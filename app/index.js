@@ -24,5 +24,5 @@ app.post('/mine', (req, res) => {
     res.redirect('/blocks');
 });
 
-app.listen(HTTP_PORT, () => console.log(`Listening on port ${HTTP_PORT}`));
+app.listen(HTTP_PORT, () => console.log(`Listening on port: ${HTTP_PORT}`));
 p2pServer.listen();

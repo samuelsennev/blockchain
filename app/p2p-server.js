@@ -12,19 +12,18 @@ class P2pServer {
     }
 
     /**
-     * Starts a Websocket server on the port the user is using
+     * Starts a Websocket server on the port that first miner used
      */
     listen() {
         const server = new Websocket.Server({ port: P2P_PORT });
         server.on('connection', socket => this.connectSocket(socket));
 
         this.connectToPeers();
-
         console.log(`Listening for peer-to-peer connections on: ${P2P_PORT}`);
     }
 
     /**
-     * Connect user to the socket intialized by the listen() function
+     * Connect a new user to the socket intialized by the listen() function
      * @param {*} socket 
      */
      connectSocket(socket) {
@@ -33,13 +32,29 @@ class P2pServer {
     }
 
     /**
-     * Connect the user to the peer started
+     * Connect the user to the peer started by the access of the first user
      */
     connectToPeers() {
         peers.forEach(peer => {
             const socket = new Websocket(peer);
             socket.on('open', () => this.connectSocket(socket))
+            
+            this.messageHandler(socket);
+            
+            //sends the stringify version of the blockchain's chain to sockets
+            socket.send(JSON.stringify(this.blockchain.chain));
         })
+    }
+
+    /**
+     * Enable each socket to receive message events
+     * @param {*} socket 
+     */
+    messageHandler(socket) {
+        socket.on('message', message => {
+            const data = JSON.parse(message);
+            console.log('data', data);
+        });
     }
 }
 
