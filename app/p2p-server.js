@@ -42,9 +42,8 @@ class P2pServer {
         console.log('Socket connected!');
 
         this.messageHandler(socket);
-                
-        //sends the stringify version of the blockchain's chain to sockets
-        socket.send(JSON.stringify(this.blockchain.chain));
+
+        this.sendChain(socket);
     }
 
     /**
@@ -55,7 +54,24 @@ class P2pServer {
         socket.on('message', message => {
             const data = JSON.parse(message);
             console.log('data', data);
+
+            this.blockchain.replaceChain(data);
         });
+    }
+
+    /**
+     * Sends the stringify version of the blockchain's chain to every running sockets.
+     * @param {*} socket 
+     */
+    sendChain(socket) {
+        socket.send(JSON.stringify(this.blockchain.chain));
+    }
+
+    /**
+     * Syncronize all socket's blockchain version.
+     */
+    syncChains() {
+        this.sockets.forEach(socket => this.sendChain(socket));
     }
 }
 
