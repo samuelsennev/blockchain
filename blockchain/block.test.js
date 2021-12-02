@@ -1,4 +1,5 @@
 const Block = require('./block');
+const { DIFFICULTY } = require('../config');
 
 /**
  * @function describe - Jest function used to test some code
@@ -31,5 +32,10 @@ describe('Block', () => {
 
     it('sets the `previousHash` to match the hash of the last block', () => {
         expect(block.previousHash).toEqual(previousBlock.hash);
+    });
+
+    it('generates a hash tha matches de difficulty', () => {
+        expect(block.hash.substring(0, DIFFICULTY)).toEqual('0'.repeat(DIFFICULTY));
+        console.log(block.toString());
     });
 });

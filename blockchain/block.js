@@ -1,15 +1,17 @@
 const SHA256 = require('crypto-js/sha256');
+const { DIFFICULTY } = require('../config');
 
 /**
  * Block class.
  * Its where we generate blocks and use all of its functionalities.
  */
 class Block {
-    constructor(timestamp, previousHash, hash, data) {
+    constructor(timestamp, previousHash, hash, data, nonce) {
         this.timestamp = timestamp;
         this.previousHash = previousHash;
         this.hash = hash;
         this.data = data;
+        this.nonce = nonce;
     }
 
     /**
@@ -21,6 +23,7 @@ class Block {
         Timestamp     : ${this.timestamp}
         Previous Hash : ${this.previousHash}
         Hash          : ${this.hash}
+        Nonce         : ${this.nonce}
         Data          : ${this.data}`;
     }
 
@@ -32,21 +35,27 @@ class Block {
      * @returns the genesis block
      */
     static genesis() {
-        return new this('Genesis timestamp', 'none', Block.generateHash('Genesis timestamp', '', []), []);
+        return new this('none', 'none', Block.generateHash('none', '', []), 'Genesis Block', 0);
     }
 
     /**
-    * - Mine a block.
+    * - Mine a block by Proof-of-work.
      * @param {*} previousBlock - previous block it self
      * @param {*} data - the data we want to stor inside the mined block
      * @returns - New instance of class Block 
      */
     static mine(previousBlock, data) {
-        const timestamp = Date.now();
+        let blockHash, timestamp;
         const previousHash = previousBlock.hash;
-        const minedBlockHash = Block.generateHash(timestamp, previousHash, data);
+        let nonce = 0;
+        
+        do {
+            nonce++;
+            timestamp = Date.now();
+            blockHash = Block.generateHash(timestamp, previousHash, data, nonce);
+        } while (blockHash.substring(0, DIFFICULTY) !== '0'.repeat(DIFFICULTY));
 
-        return new this(timestamp, previousHash, minedBlockHash, data);
+        return new this(timestamp, previousHash, blockHash, data, nonce);
     }
 
     /**
@@ -56,8 +65,8 @@ class Block {
      * @param {*} data 
      * @returns the SHA256 hash itself.
      */
-     static generateHash(timestamp, previousHash, data) {
-        return SHA256(`${timestamp}${previousHash}${data}`).toString();
+     static generateHash(timestamp, previousHash, data, nonce) {
+        return SHA256(`${timestamp}${previousHash}${data}${nonce}`).toString();
     }
 
     /**
@@ -67,8 +76,8 @@ class Block {
      * @returns - the hash itself
      */
     static blockHash(block) {
-        const { timestamp, previousHash, data } = block;
-        return Block.generateHash(timestamp, previousHash, data);
+        const { timestamp, previousHash, data, nonce } = block;
+        return Block.generateHash(timestamp, previousHash, data, nonce);
     }
 }
 
