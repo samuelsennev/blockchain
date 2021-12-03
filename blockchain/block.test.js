@@ -1,5 +1,4 @@
 const Block = require('./block');
-const { DIFFICULTY } = require('../config');
 
 /**
  * @function describe - Jest function used to test some code
@@ -34,8 +33,15 @@ describe('Block', () => {
         expect(block.previousHash).toEqual(previousBlock.hash);
     });
 
-    it('generates a hash tha matches de difficulty', () => {
-        expect(block.hash.substring(0, DIFFICULTY)).toEqual('0'.repeat(DIFFICULTY));
-        console.log(block.toString());
+    it('generates a hash that matches de difficulty', () => {
+        expect(block.hash.substring(0, block.difficulty)).toEqual('0'.repeat(block.difficulty));
+    });
+    
+    it('lowers the difficulty ofr slowly mined blocks', () => {
+        expect(Block.adjustDifficulty(block, block.timestamps+360000)).toEqual(block.difficulty-1);
+    });
+    
+    it('rases the difficulty for quickly mined blocks', () => {
+        expect(Block.adjustDifficulty(block, block.timestamp+1)).toEqual(block.difficulty+1);
     });
 });

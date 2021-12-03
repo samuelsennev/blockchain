@@ -43,7 +43,7 @@ class Block {
     /**
     * - Mine a block by Proof-of-work.
      * @param {*} previousBlock - previous block it self
-     * @param {*} data - the data we want to stor inside the mined block
+     * @param {*} data - the data we want to store inside the mined block
      * @returns - New instance of class Block 
      */
     static mine(previousBlock, data) {
@@ -70,7 +70,7 @@ class Block {
      * @param {*} data 
      * @returns the SHA256 hash itself.
      */
-     static generateHash(timestamp, previousHash, data, nonce, difficulty) {
+    static generateHash(timestamp, previousHash, data, nonce, difficulty) {
         return SHA256(`${timestamp}${previousHash}${data}${nonce}${difficulty}`).toString();
     }
 
@@ -85,10 +85,19 @@ class Block {
         return Block.generateHash(timestamp, previousHash, data, nonce, difficulty);
     }
 
+    /**
+     * - Check if the mining difficulty.
+     * - If the mining period is low, then increase its difficulty. Else, decrease it.
+     * @param {*} previousBlock 
+     * @param {*} currentTime 
+     * @returns difficulty
+     */
     static adjustDifficulty(previousBlock, currentTime) {
         let { difficulty } = previousBlock;
         difficulty = previousBlock.timestamp + MINE_RATE > currentTime ? difficulty + 1 : difficulty - 1
         return difficulty;
+
+        // console.log(`${previousBlock.timestamp + MINE_RATE} = ${currentTime}`);
     }
 }
 
