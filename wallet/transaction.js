@@ -45,6 +45,19 @@ class Transaction {
             signature: senderWallet.sign(ChainUtil.hash(transaction.outputs))
         }
     }
+
+    /**
+     * Sends to ChainUtils varifyTransaction function to check if the signature is valid.
+     * @param {*} transaction - transaction to verify
+     * @returns - if the singature is valid or not.
+     */
+    static verifyTransaction(transaction) {
+        return ChainUtil.verifySignature(
+            transaction.input.address, 
+            transaction.input.signature,
+            ChainUtil.hash(transaction.outputs)
+        );
+    }
 }
 
 module.exports = Transaction;

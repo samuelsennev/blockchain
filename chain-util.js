@@ -25,6 +25,19 @@ class ChainUtil {
     static hash(data) {
         return SHA256(JSON.stringify(data)).toString();
     }
+
+    /**
+     * - Checks if the signature is valid using ec's lib functions.
+     * - As the publicKey is coded using 'hex', keyFromPublic needs the 'hex' parameter to decode it.
+     * - dataHash will be used as an expected hash after signature's decryption.
+     * @param {*} publicKey - the publicKey itself, coded by 'hex'.
+     * @param {*} signature - sender's signature (privateKey).
+     * @param {*} dataHash - the hashed data used as a matching parameter after signature's decryption by publicKey (his perfect key pair).
+     * @returns 
+     */
+    static verifySignature(publicKey, signature, dataHash) {
+        return ec.keyFromPublic(publicKey, 'hex').verify(dataHash, signature);
+    }
 }
 
 module.exports = ChainUtil;
