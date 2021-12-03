@@ -1,5 +1,5 @@
 const express = require('express');
-const bodyParser = require('body-parser');
+// const bodyParser = require('body-parser');
 const Blockchain = require('../blockchain');
 const P2pServer = require('./p2p-server');
 
@@ -10,7 +10,8 @@ const bc = new Blockchain();
 const p2pServer = new P2pServer(bc); 
 
 //allows json data from post-requests
-app.use(bodyParser.json());
+app.use(express.json());
+app.use(express.urlencoded({extended: true}));
 
 //Sends a get request to access the blocks of the current chain 
 app.get('/blocks', (req, res) => {
